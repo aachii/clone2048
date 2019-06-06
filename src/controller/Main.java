@@ -1,7 +1,6 @@
 package controller;
 
 import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,9 +11,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/Game.fxml"));
-        primaryStage.setTitle("2048");
+        FXMLLoader loader = new FXMLLoader(this.getClass().getResource("/view/Game.fxml"));
+        Parent root = loader.load();
+    	primaryStage.setTitle("2048");
         Scene scene = new Scene(root);
+        scene.getRoot().requestFocus();
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.centerOnScreen();

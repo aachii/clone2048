@@ -6,6 +6,10 @@ public class Board {
 	private int[][] board;
 	private final int SPAWN_COUNT_INITIAL = 2;
 	private final int SPAWN_COUNT = 1;
+	private final int POSITIVE = 1;
+	private final int NEGATIVE = -1;
+	private final int VERTICAL = 0;
+	private final int HORIZONTAL = 1;
 	
 	public Board(int rows, int cols) {
 		this.board = new int[cols][rows];
@@ -21,24 +25,27 @@ public class Board {
 			}
 			ret+="\n";
 		}
-		//return ret.substring(0, ret.length()-1);
 		return ret;
 	}
 	
 	public void shiftUp() {
-		shiftUpDown(0, board.length-1, 1);
+		shiftHelp(0, board.length, 0, board[0].length, POSITIVE, VERTICAL);
+		System.out.println("up");
 	}
 	
 	public void shiftDown() {
-		shiftUpDown(board.length-1, 0, -1);
+		shiftHelp(board.length-1, -1, board[0].length-1, -1, NEGATIVE, VERTICAL);
+		System.out.println("down");
 	}
 	
 	public void shiftLeft() {
-		shiftLeftRight(0, board[0].length-1, 1);
+		shiftHelp(0, board.length, 0, board[0].length, POSITIVE, HORIZONTAL);
+		System.out.println("left");
 	}
 	
 	public void shiftRight() {
-		shiftLeftRight(board[0].length-1, 0, -1);
+		shiftHelp(board.length-1, -1, board[0].length-1, -1, NEGATIVE, HORIZONTAL);
+		System.out.println("right");
 	}
 	
 	public void spawn() {
@@ -49,41 +56,34 @@ public class Board {
 		return board;
 	}
 	
-	private void shiftUpDown(int start, int end, int inc) {
-		for (int i=start; i!=end; i+=inc) {
-			for (int j=0; j<board[0].length; j++) {
-				if (board[i][j] == 0) {
-					int pull = i + inc;
+	private void shiftHelp(int startI, int endI, int startJ, int endJ, int inc, int direction) {
+		for (int i=startI; i!=endI; i+=inc) {
+			for (int j=startJ; j!=endJ; j+=inc) {
+				//System.out.println("x:"+i+" y:"+j);
+				if (direction == VERTICAL) {
+					int pull = i+inc;
 					while (pull >= 0 && pull < board.length) {
-						if (board[pull][j] != 0) {
+						if (board[pull][j] != 0 && board[i][j] == 0) {
 							board[i][j] = board[pull][j];
 							board[pull][j] = 0;
-							merge(i, j, i-inc, j);
 							break;
 						} else {
 							pull+=inc;
 						}
 					}
-				}
-			}
-		}
-	}
-	
-	private void shiftLeftRight(int start, int end, int inc) {
-		for (int i=0; i<board.length; i++) {
-			for (int j=start; j!=end; j+=inc) {
-				if (board[i][j] == 0) {
-					int pull = j + inc;
-					while (pull >= 0 && pull < board.length) {
-						if (board[i][pull] != 0) {
+					merge(i, j, i-inc, j);
+				} else if (direction == HORIZONTAL) {
+					int pull = j+inc;
+					while (pull >= 0 && pull < board[0].length) {
+						if (board[i][pull] != 0 && board[i][j] == 0) {
 							board[i][j] = board[i][pull];
 							board[i][pull] = 0;
-							merge(i, j, i, j-inc);
 							break;
 						} else {
 							pull+=inc;
 						}
 					}
+					merge(i, j, i, j-inc);
 				}
 			}
 		}
@@ -116,11 +116,15 @@ public class Board {
 		}
 	}
 	
-	private void merge(int ixf, int iyf, int ixs, int iys) {
-		if (ixs >= 0 && ixs < board.length && iys >= 0 && iys < board[0].length) {
-			if (board[ixf][iyf] == board[ixs][iys]) {
-				board[ixs][iys] = board[ixs][iys] + board[ixs][iys];
-				board[ixf][iyf] = 0;
+	private void merge(int iif, int ijf, int iis, int ijs) {
+		if (iis >= 0 && iis < board.length && ijs >= 0 && ijs < board[0].length) {
+			//System.out.println("xf:"+iif+" yf:"+ijf+" xs:"+iis+" ys:"+ijs);
+			if (board[iif][ijf] == board[iis][ijs]) {
+				board[iis][ijs] *= 2;
+				board[iif][ijf] = 0;
+			} else if (board[iis][ijs] == 0) {
+				board[iis][ijs] = board[iif][ijf];
+				board[iif][ijf] = 0;
 			}
 		}
 	}
