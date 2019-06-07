@@ -12,7 +12,7 @@ public class Board {
 	private final int HORIZONTAL = 1;
 	
 	public Board(int rows, int cols) {
-		this.board = new int[cols][rows];
+		this.board = new int[rows][cols];
 		init();
 		spawnHelp(SPAWN_COUNT_INITIAL);
 	}
@@ -71,7 +71,7 @@ public class Board {
 							pull+=inc;
 						}
 					}
-					merge(i, j, i-inc, j);
+					merge(i, j, i-inc, j, inc);
 				} else if (direction == HORIZONTAL) {
 					int pull = j+inc;
 					while (pull >= 0 && pull < board[0].length) {
@@ -83,7 +83,7 @@ public class Board {
 							pull+=inc;
 						}
 					}
-					merge(i, j, i, j-inc);
+					merge(i, j, i, j-inc, inc);
 				}
 			}
 		}
@@ -111,12 +111,11 @@ public class Board {
 						break;
 					}
 				}
-				
 			}
 		}
 	}
 	
-	private void merge(int iif, int ijf, int iis, int ijs) {
+	private void merge(int iif, int ijf, int iis, int ijs, int inc) {
 		if (iis >= 0 && iis < board.length && ijs >= 0 && ijs < board[0].length) {
 			//System.out.println("xf:"+iif+" yf:"+ijf+" xs:"+iis+" ys:"+ijs);
 			if (board[iif][ijf] == board[iis][ijs]) {
@@ -125,6 +124,11 @@ public class Board {
 			} else if (board[iis][ijs] == 0) {
 				board[iis][ijs] = board[iif][ijf];
 				board[iif][ijf] = 0;
+				if (iif == iis) {
+					merge(iis, ijs, iis, ijs-inc, inc);
+				} else if (ijf == ijs) {
+					merge(iis, ijs, iis-inc, ijs, inc);
+				}
 			}
 		}
 	}

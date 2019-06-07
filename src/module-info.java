@@ -1,4 +1,4 @@
-module clone2048 {
+module ShiftyBlocks {
 	requires transitive javafx.fxml;
     requires transitive javafx.controls;
 	requires javafx.graphics;

@@ -6,7 +6,7 @@ public class ColorFactory {
 	private String[] colors;
 	
 	public ColorFactory() {
-		final int ARR_SIZE = 8192;
+		final int ARR_SIZE = 65536;
 		Random rand = new Random();
         colors = new String[ARR_SIZE+1];
         for (int i = 1; i <= ARR_SIZE; i++) {
