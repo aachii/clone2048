@@ -17,6 +17,7 @@ public class GameController {
 	
 	private Board board;
 	private ColorFactory cf = new ColorFactory();
+	private boolean gameIsLost;
 
     @FXML
     private Pane display;
@@ -25,11 +26,13 @@ public class GameController {
     public void initialize() {
 		System.out.println("initialized");
     	board = new Board(BOARD_ROWS, BOARD_COLUMNS);
+    	gameIsLost = false;
         updateBlocks(board.getNums());
 	}
     
     @FXML
     void handle(KeyEvent event) {
+    	if (gameIsLost) { return; }
     	switch (event.getCode()) {
     		case UP:
     			board.shiftUp(); break;
@@ -43,6 +46,10 @@ public class GameController {
 			break;
     	}
     	board.spawn();
+    	if (board.isGameOver()) {
+    		gameIsLost = true;
+    		System.out.println("Gameover!");
+    	}
     	updateBlocks(board.getNums());
     }
     
