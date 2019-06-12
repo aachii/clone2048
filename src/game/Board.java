@@ -30,24 +30,24 @@ public class Board {
 		return ret;
 	}
 	
-	public void shiftUp() {
-		shiftHelp(0, board.length, 0, board[0].length, POSITIVE, VERTICAL);
+	public boolean shiftUp() {
 		System.out.println("up");
+		return shiftHelp(0, board.length, 0, board[0].length, POSITIVE, VERTICAL);
 	}
 
-	public void shiftDown() {
-		shiftHelp(board.length-1, -1, board[0].length-1, -1, NEGATIVE, VERTICAL);
+	public boolean shiftDown() {
 		System.out.println("down");
+		return shiftHelp(board.length-1, -1, board[0].length-1, -1, NEGATIVE, VERTICAL);
 	}
 	
-	public void shiftLeft() {
-		shiftHelp(0, board.length, 0, board[0].length, POSITIVE, HORIZONTAL);
+	public boolean shiftLeft() {
 		System.out.println("left");
+		return shiftHelp(0, board.length, 0, board[0].length, POSITIVE, HORIZONTAL);
 	}
 	
-	public void shiftRight() {
-		shiftHelp(board.length-1, -1, board[0].length-1, -1, NEGATIVE, HORIZONTAL);
+	public boolean shiftRight() {
 		System.out.println("right");
+		return shiftHelp(board.length-1, -1, board[0].length-1, -1, NEGATIVE, HORIZONTAL);
 	}
 	
 	public boolean spawn() {
@@ -75,7 +75,8 @@ public class Board {
 		return board;
 	}
 	
-	private void shiftHelp(int startI, int endI, int startJ, int endJ, int inc, int direction) {
+	private boolean shiftHelp(int startI, int endI, int startJ, int endJ, int inc, int direction) {
+		boolean ret = false;
 		for (int i=startI; i!=endI; i+=inc) {
 			for (int j=startJ; j!=endJ; j+=inc) {
 				//System.out.println("x:"+i+" y:"+j);
@@ -85,27 +86,30 @@ public class Board {
 						if (board[pull][j] != 0 && board[i][j] == 0) {
 							board[i][j] = board[pull][j];
 							board[pull][j] = 0;
+							ret = true;
 							break;
 						} else {
 							pull+=inc;
 						}
 					}
-					merge(i, j, i-inc, j, inc, true);
+					if (merge(i, j, i-inc, j, inc, true)) { ret = true; }
 				} else if (direction == HORIZONTAL) {
 					int pull = j+inc;
 					while (pull >= 0 && pull < board[0].length) {
 						if (board[i][pull] != 0 && board[i][j] == 0) {
 							board[i][j] = board[i][pull];
 							board[i][pull] = 0;
+							ret = true;
 							break;
 						} else {
 							pull+=inc;
 						}
 					}
-					merge(i, j, i, j-inc, inc, true);
+					if (merge(i, j, i, j-inc, inc, true)) { ret = true; }
 				}
 			}
 		}
+		return ret;
 	}
 
 	private void init() {
@@ -138,12 +142,14 @@ public class Board {
 		}
 	}
 	
-	private void merge(int iif, int ijf, int iis, int ijs, int inc, boolean allowMerge) {
-		if (iis >= 0 && iis < board.length && ijs >= 0 && ijs < board[0].length) {
+	private boolean merge(int iif, int ijf, int iis, int ijs, int inc, boolean allowMerge) {
+		boolean played = false;
+		if (iis >= 0 && iis < board.length && ijs >= 0 && ijs < board[0].length && board[iif][ijf] > 0) {
 			//System.out.println("xf:"+iif+" yf:"+ijf+" xs:"+iis+" ys:"+ijs);
 			if (board[iif][ijf] == board[iis][ijs] && allowMerge) {
 				board[iis][ijs] *= 2;
 				board[iif][ijf] = 0;
+				played = true;
 			} else if (board[iis][ijs] == 0) {
 				board[iis][ijs] = board[iif][ijf];
 				board[iif][ijf] = 0;
@@ -152,8 +158,10 @@ public class Board {
 				} else if (ijf == ijs) {
 					merge(iis, ijs, iis-inc, ijs, inc, false);
 				}
+				played = true;
 			}
 		}
+		return played;
 	}
 	
 	private boolean hasEqualNeighbour(int i, int j) {

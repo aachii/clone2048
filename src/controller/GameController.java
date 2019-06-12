@@ -33,24 +33,27 @@ public class GameController {
     @FXML
     void handle(KeyEvent event) {
     	if (gameIsLost) { return; }
+    	boolean played = false;
     	switch (event.getCode()) {
     		case UP:
-    			board.shiftUp(); break;
+    			played = board.shiftUp(); break;
     		case DOWN:
-    			board.shiftDown(); break;
+    			played = board.shiftDown(); break;
     		case LEFT:
-    			board.shiftLeft(); break;
+    			played = board.shiftLeft(); break;
     		case RIGHT:
-    			board.shiftRight(); break;
+    			played = board.shiftRight(); break;
 		default:
 			break;
     	}
-    	board.spawn();
+    	if (played) {
+    		board.spawn();
+    		updateBlocks(board.getNums());
+    	}
     	if (board.isGameOver()) {
     		gameIsLost = true;
     		System.out.println("Gameover!");
     	}
-    	updateBlocks(board.getNums());
     }
     
     private void updateBlocks(int[][] nums) {
